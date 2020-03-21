@@ -15,6 +15,10 @@
     <tags>taucode webapi server</tags>
     <dependencies>
       <group targetFramework=".NETStandard2.1">
+        <dependency id="Autofac.Extensions.DependencyInjection" version="6.0.0" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.2.5" />
+        <dependency id="TauCode.Cqrs" version="1.0.0-dev-2020-03-16-00-23" />
+        <dependency id="TauCode.WebApi" version="1.0.0-dev-2020-03-15-23-43" />
       </group>
     </dependencies>
   </metadata>
