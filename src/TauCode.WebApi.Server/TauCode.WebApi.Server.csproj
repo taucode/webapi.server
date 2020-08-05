@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="TauCode.Cqrs" Version="1.0.0-dev-2020-03-16-00-23" />
+    <PackageReference Include="TauCode.WebApi" Version="1.0.0-dev-2020-03-15-23-43" />
+  </ItemGroup>
+
+</Project>
