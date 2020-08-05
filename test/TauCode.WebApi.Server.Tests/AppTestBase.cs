@@ -28,7 +28,7 @@ namespace TauCode.WebApi.Server.Tests
             this.Factory = new TestFactory();
 
             this.HttpClient = this.Factory
-                .WithWebHostBuilder(builder => builder.UseSolutionRelativeContentRoot(@"tests\TauCode.WebApi.Server.Tests"))
+                .WithWebHostBuilder(builder => builder.UseSolutionRelativeContentRoot(@"test\TauCode.WebApi.Server.Tests"))
                 .CreateClient();
 
             var testServer = this.Factory.Factories.Single().Server;
