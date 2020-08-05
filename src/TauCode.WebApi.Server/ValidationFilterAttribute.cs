@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -134,7 +135,14 @@ namespace TauCode.WebApi.Server
                     break;
                 }
 
-                var validationResult = validator.Validate(argumentValue);
+                var method = validator.GetType().GetMethod("Validate", new Type[] { argumentValue.GetType() });
+                if (method == null)
+                {
+                    throw new NotImplementedException(); // todo
+                }
+
+                //var validationResult = validator.Validate(argumentValue);
+                var validationResult = (ValidationResult)method.Invoke(validator, new[] { argumentValue });
 
                 // Return if the argument value was valid
                 if (validationResult.IsValid)
