@@ -16,7 +16,29 @@ namespace TauCode.WebApi.Server
 {
     public class ValidationFilterAttribute : ActionFilterAttribute
     {
-        private readonly Dictionary<Type, Type> _validatorTypes; // key is validated type (e.g. FooCommand), value is validator (e.g. FooCommandValidator)
+        #region Nested
+
+        private class ValidatorRecord
+        {
+            internal ValidatorRecord(Type validatorType)
+            {
+                this.ValidatorType = validatorType;
+                var validatedType = GetValidatedType(validatorType);
+                this.ValidateMethod = validatorType.GetMethod(
+                    nameof(AbstractValidator<ICommand>.Validate),
+                    new Type[] { validatedType });
+            }
+
+            internal Type ValidatorType { get; }
+            internal MethodInfo ValidateMethod { get; }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Key is validated type, e.g. FooCommand.
+        /// </summary>
+        private readonly Dictionary<Type, ValidatorRecord> _validatorTypes;
 
         public ValidationFilterAttribute(Assembly coreAssembly)
         {
@@ -28,12 +50,12 @@ namespace TauCode.WebApi.Server
             _validatorTypes = coreAssembly
                 .GetTypes()
                 .Where(IsCommandValidator)
-                .ToDictionary(GetValidatedType, x => x);
+                .ToDictionary(GetValidatedType, x => new ValidatorRecord(x));
         }
 
         private static Type GetValidatedType(Type validatorType)
         {
-            return validatorType.BaseType.GetGenericArguments().Single();
+            return validatorType.BaseType?.GetGenericArguments().Single();
         }
 
         private static bool IsCommandValidator(Type type)
@@ -97,22 +119,22 @@ namespace TauCode.WebApi.Server
                     }
 
                     // Add the error to the response, with an empty error code, since this is an unspecific error
-                    validationError.AddFailure(fieldName, null, errorMessage);
+                    validationError.AddFailure(fieldName, "MvcModelError", errorMessage);
                 }
             }
 
             // Validate all the arguments for the current action
-            foreach (var argument in actionContext.ActionDescriptor./*GetParameters()*/Parameters)
+            foreach (var argument in actionContext.ActionDescriptor.Parameters)
             {
                 // Skip all arguments without a registered validator
-                _validatorTypes.TryGetValue(argument.ParameterType, out var validatorType);
-                if (validatorType == null)
+                var validatorRecord = _validatorTypes.GetValueOrDefault(argument.ParameterType);
+                if (validatorRecord == null)
                 {
                     continue;
                 }
 
                 // Get the registered validator
-                var validator = (IValidator)actionContext.HttpContext.RequestServices.GetService(validatorType);
+                var validator = actionContext.HttpContext.RequestServices.GetService(validatorRecord.ValidatorType);
 
                 if (validator == null)
                 {
@@ -131,17 +153,11 @@ namespace TauCode.WebApi.Server
 
                 if (argumentValue == null)
                 {
-                    validationError = ValidationErrorDto.CreateStandard($"Argument '{argument.Name}' is null");
+                    validationError = ValidationErrorDto.CreateStandard($"Argument '{argument.Name}' is null.");
                     break;
                 }
 
-                var method = validator.GetType().GetMethod("Validate", new Type[] { argumentValue.GetType() });
-                if (method == null)
-                {
-                    throw new NotImplementedException(); // todo
-                }
-
-                //var validationResult = validator.Validate(argumentValue);
+                var method = validatorRecord.ValidateMethod;
                 var validationResult = (ValidationResult)method.Invoke(validator, new[] { argumentValue });
 
                 // Return if the argument value was valid
@@ -181,7 +197,6 @@ namespace TauCode.WebApi.Server
 
                 // Set the action response to a 400 Bad Request, with the validation error response as content
                 actionContext.HttpContext.Response.Headers.Add(DtoHelper.PayloadTypeHeaderName, DtoHelper.ValidationErrorPayloadType);
-
             }
         }
 
