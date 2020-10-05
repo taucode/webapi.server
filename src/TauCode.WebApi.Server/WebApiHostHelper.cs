@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Inflector;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace TauCode.WebApi.Server
 {
@@ -73,28 +74,11 @@ namespace TauCode.WebApi.Server
         {
             if (string.IsNullOrEmpty(propertyName))
             {
-                propertyName = "[unknown]";
+                return "[unknown]";
             }
 
-            // Find all nested property names
             var nestedPropertyNames = propertyName.Split('.');
-
-            var sb = new StringBuilder();
-
-            // Convert all nested property names into camel case
-            for (var i = 0; i < nestedPropertyNames.Length; i++)
-            {
-                var nestedPropertyName = nestedPropertyNames[i];
-                sb.Append(char.ToLowerInvariant(nestedPropertyName[0]) + nestedPropertyName.Substring(1));
-
-                // Do not append a period if there are no more nested properties
-                if (i + 1 < nestedPropertyNames.Length)
-                {
-                    sb.Append('.');
-                }
-            }
-
-            return sb.ToString();
+            return string.Join('.', nestedPropertyNames.Select(x => x.Camelize()));
         }
     }
 }
