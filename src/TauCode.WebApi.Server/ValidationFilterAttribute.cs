@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using TauCode.Cqrs.Commands;
+using TauCode.Cqrs.Abstractions;
 using TauCode.Validation;
 
 namespace TauCode.WebApi.Server
