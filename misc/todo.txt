@@ -5,3 +5,7 @@
 2020-03-20
 ==========
 +   1. Find code 'validator is IParameterValidator'; ut it.
+
+2021-04-04
+==========
+    1. Get rid of TauCode.Domain dependency.

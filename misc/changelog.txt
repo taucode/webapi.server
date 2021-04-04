@@ -32,3 +32,7 @@
     Version: 3.4
     1. On its way to deprecated taucode.apps.
     2. Host library simplified.
+
+2021-04-04
+==========
+    1. Resurrection.
