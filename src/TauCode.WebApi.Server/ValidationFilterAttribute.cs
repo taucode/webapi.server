@@ -60,29 +60,29 @@ namespace TauCode.WebApi.Server
 
         private static bool IsCommandValidator(Type type)
         {
-            var baseType = type.BaseType;
+            var interfaces = type.GetInterfaces();
 
-            if (baseType == null)
+            // search for IValidator<TCommand> where TCommand: ICommand
+            foreach (var @interface in interfaces)
             {
-                return false;
-            }
-
-            if (baseType.IsGenericType)
-            {
-                var generic = baseType.GetGenericTypeDefinition();
-                if (generic == typeof(AbstractValidator<>))
+                var isGeneric = @interface.IsConstructedGenericType;
+                if (!isGeneric)
                 {
-                    var arg = baseType.GetGenericArguments().Single();
-                    var argInterfaces = arg.GetInterfaces();
-                    if (!argInterfaces.Contains(typeof(ICommand)))
-                    {
-                        return false;
-                    }
-
-                    return true;
+                    continue;
                 }
 
-                return false;
+                var getGenericTypeDefinition = @interface.GetGenericTypeDefinition();
+                if (getGenericTypeDefinition != typeof(IValidator<>))
+                {
+                    continue;
+                }
+
+                var supposedCommandType = @interface.GetGenericArguments().Single();
+                var argInterfaces = supposedCommandType.GetInterfaces();
+                if (argInterfaces.Contains(typeof(ICommand)))
+                {
+                    return true;
+                }
             }
 
             return false;
