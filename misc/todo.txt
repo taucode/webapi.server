@@ -8,5 +8,5 @@
 
 2021-04-04
 ==========
-    1. Get rid of TauCode.Domain dependency.
++   1. Get rid of TauCode.Domain dependency.
 X   2. Consider referencing TauCode.Cqrs.Validation, in which there _should_be_ a method 'IsValidatorType(type)'. ф
