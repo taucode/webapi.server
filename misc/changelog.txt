@@ -1,4 +1,4 @@
-2019-07-01
+﻿2019-07-01
 ==========
     1. Ported to .NET Standard.
 
@@ -32,3 +32,11 @@
     Version: 3.4
     1. On its way to deprecated taucode.apps.
     2. Host library simplified.
+
+2021-04-04
+==========
+    1. Resurrection.
+
+2022-07-28
+==========
+    1. Release 1.3.7.

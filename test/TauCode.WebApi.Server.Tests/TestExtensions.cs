@@ -4,8 +4,8 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using TauCode.Domain.Identities;
 
+// todo clean
 namespace TauCode.WebApi.Server.Tests
 {
     internal static class TestExtensions
@@ -52,20 +52,20 @@ namespace TauCode.WebApi.Server.Tests
             return sb.ToString();
         }
 
-        internal static IdDto ToIdDto(this string s)
-        {
-            if (s == null)
-            {
-                return null;
-            }
+        //internal static IdDto ToIdDto(this string s)
+        //{
+        //    if (s == null)
+        //    {
+        //        return null;
+        //    }
 
-            return new IdDto(s);
-        }
+        //    return new IdDto(s);
+        //}
 
-        internal static IdDto ToIdDto(this IdBase id)
-        {
-            return new IdDto(id.Id);
-        }
+        //internal static IdDto ToIdDto(this IdBase id)
+        //{
+        //    return new IdDto(id.Id);
+        //}
 
         internal static ValidationResult ShouldBeValid(this ValidationResult validationResult)
         {

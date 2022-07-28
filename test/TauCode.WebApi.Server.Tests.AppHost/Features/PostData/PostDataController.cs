@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using System.Threading.Tasks;
 using TauCode.Cqrs.Commands;
 
@@ -30,7 +31,7 @@ namespace TauCode.WebApi.Server.Tests.AppHost.Features.PostData
         [Route("api/misc/post-data-async")]
         public async Task<IActionResult> PostDataAsync([FromBody] PostDataCommand command)
         {
-            await _commandDispatcher.DispatchAsync(command);
+            await _commandDispatcher.DispatchAsync(command, CancellationToken.None);
             var response = new PostDataResponse
             {
                 Greeting = command.GetResult(),
