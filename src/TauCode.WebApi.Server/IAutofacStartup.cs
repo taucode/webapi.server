@@ -1,9 +1,8 @@
 ﻿using Autofac;
 
-namespace TauCode.WebApi.Server
+namespace TauCode.WebApi.Server;
+
+public interface IAutofacStartup
 {
-    public interface IAutofacStartup
-    {
-        ILifetimeScope AutofacContainer { get; }
-    }
+    ILifetimeScope AutofacContainer { get; }
 }

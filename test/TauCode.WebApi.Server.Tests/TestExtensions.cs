@@ -1,120 +1,117 @@
 ﻿using FluentValidation.Results;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Text;
 
 // todo clean
-namespace TauCode.WebApi.Server.Tests
+namespace TauCode.WebApi.Server.Tests;
+
+internal static class TestExtensions
 {
-    internal static class TestExtensions
+    internal static T ReadAs<T>(this HttpResponseMessage message)
     {
-        internal static T ReadAs<T>(this HttpResponseMessage message)
-        {
-            var json = message.Content.ReadAsStringAsync().Result;
-            var result = JsonConvert.DeserializeObject<T>(json);
-            return result;
-        }
+        var json = message.Content.ReadAsStringAsync().Result;
+        var result = JsonConvert.DeserializeObject<T>(json);
+        return result;
+    }
 
-        internal static ErrorDto ReadAsError(this HttpResponseMessage message)
-        {
-            return message.ReadAs<ErrorDto>();
-        }
+    internal static ErrorDto ReadAsError(this HttpResponseMessage message)
+    {
+        return message.ReadAs<ErrorDto>();
+    }
 
-        internal static ValidationErrorDto ReadAsValidationError(this HttpResponseMessage message)
-        {
-            return message.ReadAs<ValidationErrorDto>();
-        }
+    internal static ValidationErrorDto ReadAsValidationError(this HttpResponseMessage message)
+    {
+        return message.ReadAs<ValidationErrorDto>();
+    }
 
-        internal static string BuildQueryString(this IDictionary<string, string> parameterDictionary)
-        {
-            var sb = new StringBuilder();
-            var added = false;
+    internal static string BuildQueryString(this IDictionary<string, string> parameterDictionary)
+    {
+        var sb = new StringBuilder();
+        var added = false;
 
-            foreach (var pair in parameterDictionary)
+        foreach (var pair in parameterDictionary)
+        {
+            if (pair.Value == null)
             {
-                if (pair.Value == null)
-                {
-                    continue;
-                }
-
-                if (added)
-                {
-                    sb.Append("&");
-                }
-
-                added = true;
-
-                sb.Append($"{pair.Key}={pair.Value}");
+                continue;
             }
 
-            return sb.ToString();
+            if (added)
+            {
+                sb.Append("&");
+            }
+
+            added = true;
+
+            sb.Append($"{pair.Key}={pair.Value}");
         }
 
-        //internal static IdDto ToIdDto(this string s)
-        //{
-        //    if (s == null)
-        //    {
-        //        return null;
-        //    }
+        return sb.ToString();
+    }
 
-        //    return new IdDto(s);
-        //}
+    //internal static IdDto ToIdDto(this string s)
+    //{
+    //    if (s == null)
+    //    {
+    //        return null;
+    //    }
 
-        //internal static IdDto ToIdDto(this IdBase id)
-        //{
-        //    return new IdDto(id.Id);
-        //}
+    //    return new IdDto(s);
+    //}
 
-        internal static ValidationResult ShouldBeValid(this ValidationResult validationResult)
-        {
-            Assert.That(validationResult.IsValid, Is.True);
-            return validationResult;
-        }
+    //internal static IdDto ToIdDto(this IdBase id)
+    //{
+    //    return new IdDto(id.Id);
+    //}
 
-        internal static ValidationResult ShouldBeInvalid(this ValidationResult validationResult, int expectedErrorCount)
-        {
-            Assert.That(validationResult.IsValid, Is.False);
-            Assert.That(validationResult.Errors, Has.Count.EqualTo(expectedErrorCount));
+    internal static ValidationResult ShouldBeValid(this ValidationResult validationResult)
+    {
+        Assert.That(validationResult.IsValid, Is.True);
+        return validationResult;
+    }
 
-            return validationResult;
-        }
+    internal static ValidationResult ShouldBeInvalid(this ValidationResult validationResult, int expectedErrorCount)
+    {
+        Assert.That(validationResult.IsValid, Is.False);
+        Assert.That(validationResult.Errors, Has.Count.EqualTo(expectedErrorCount));
 
-        internal static ValidationResult ShouldHaveError(
-            this ValidationResult validationResult,
-            int errorIndex,
-            string propertyName,
-            string expectedErrorCode,
-            string expectedErrorMessage)
-        {
-            Assert.That(validationResult.Errors[errorIndex].PropertyName, Is.EqualTo(propertyName));
-            Assert.That(validationResult.Errors[errorIndex].ErrorCode, Is.EqualTo(expectedErrorCode));
-            Assert.That(validationResult.Errors[errorIndex].ErrorMessage, Is.EqualTo(expectedErrorMessage));
+        return validationResult;
+    }
 
-            return validationResult;
-        }
+    internal static ValidationResult ShouldHaveError(
+        this ValidationResult validationResult,
+        int errorIndex,
+        string propertyName,
+        string expectedErrorCode,
+        string expectedErrorMessage)
+    {
+        Assert.That(validationResult.Errors[errorIndex].PropertyName, Is.EqualTo(propertyName));
+        Assert.That(validationResult.Errors[errorIndex].ErrorCode, Is.EqualTo(expectedErrorCode));
+        Assert.That(validationResult.Errors[errorIndex].ErrorMessage, Is.EqualTo(expectedErrorMessage));
 
-        internal static ValidationErrorDto ShouldHaveFailureNumber(
-            this ValidationErrorDto validationError,
-            int failureNumber)
-        {
-            Assert.That(validationError.Failures, Has.Count.EqualTo(failureNumber));
-            return validationError;
-        }
+        return validationResult;
+    }
 
-        internal static ValidationErrorDto ShouldContainFailure(
-            this ValidationErrorDto validationError,
-            string key,
-            string code,
-            string message)
-        {
-            Assert.That(validationError.Failures, Does.ContainKey(key));
-            var failure = validationError.Failures[key];
-            Assert.That(failure.Code, Is.EqualTo(code));
-            Assert.That(failure.Message, Is.EqualTo(message));
+    internal static ValidationErrorDto ShouldHaveFailureNumber(
+        this ValidationErrorDto validationError,
+        int failureNumber)
+    {
+        Assert.That(validationError.Failures, Has.Count.EqualTo(failureNumber));
+        return validationError;
+    }
 
-            return validationError;
-        }
+    internal static ValidationErrorDto ShouldContainFailure(
+        this ValidationErrorDto validationError,
+        string key,
+        string code,
+        string message)
+    {
+        Assert.That(validationError.Failures, Does.ContainKey(key));
+        var failure = validationError.Failures[key];
+        Assert.That(failure.Code, Is.EqualTo(code));
+        Assert.That(failure.Message, Is.EqualTo(message));
+
+        return validationError;
     }
 }
