@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
   <metadata>
     <id>TauCode.WebApi.Server</id>
-    <version>1.5.1-alpha.1.2022-08-08.13-31</version>
+    <version>1.5.5-alpha.1.2022-08-12.10-35</version>
     <authors>TauCode</authors>
     <owners>TauCode</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -13,7 +13,7 @@
       TauCode Web API server support
     </description>
     <releaseNotes>
-      Developing release 1.5.1.
+      Developing release 1.5.5.
     </releaseNotes>
     <tags>taucode webapi server</tags>
     <dependencies>
@@ -21,9 +21,9 @@
         <dependency id="Autofac" version="6.4.0" />
         <dependency id="Inflector.NetStandard" version="1.2.2" />
         <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.2.5" />
-        <dependency id="TauCode.Cqrs.Abstractions" version="1.5.0" />
-        <dependency id="TauCode.Validation" version="1.5.0" />
-        <dependency id="TauCode.WebApi" version="1.5.0" />
+        <dependency id="TauCode.Cqrs.Abstractions" version="1.5.5-alpha.1.2022-08-11.23-47" />
+        <dependency id="TauCode.Validation" version="1.5.5-alpha.1.2022-08-11.23-47" />
+        <dependency id="TauCode.WebApi" version="1.5.5-alpha.1.2022-08-11.23-47" />
       </group>
     </dependencies>
   </metadata>
