@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using TauCode.Cqrs.Abstractions;
+using TauCode.Cqrs;
 using TauCode.Validation;
 
 namespace TauCode.WebApi.Server;
