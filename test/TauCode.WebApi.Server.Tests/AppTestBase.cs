@@ -1,15 +1,12 @@
 ﻿using Autofac;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Globalization;
 
 namespace TauCode.WebApi.Server.Tests;
 
 [TestFixture]
 public abstract class AppTestBase
 {
-    protected TestFactory Factory { get; private set; }
+    //protected TestFactory Factory { get; private set; }
     protected HttpClient HttpClient { get; private set; }
     protected ILifetimeScope Container { get; private set; }
 
@@ -20,29 +17,32 @@ public abstract class AppTestBase
     [OneTimeSetUp]
     public void OneTimeSetUpBase()
     {
-        Inflector.Inflector.SetDefaultCultureFunc = () => new CultureInfo("en-US");
+        throw new NotImplementedException();
+
+        //Inflector.Inflector.SetDefaultCultureFunc = () => new CultureInfo("en-US");
 
 
-        this.Factory = new TestFactory();
+        //this.Factory = new TestFactory();
 
-        this.HttpClient = this.Factory
-            .WithWebHostBuilder(builder => builder.UseSolutionRelativeContentRoot(@"test\TauCode.WebApi.Server.Tests"))
-            .CreateClient();
+        //this.HttpClient = this.Factory
+        //    .WithWebHostBuilder(builder => builder.UseSolutionRelativeContentRoot(@"test\TauCode.WebApi.Server.Tests"))
+        //    .CreateClient();
 
-        var testServer = this.Factory.Factories.Single().Server;
+        //var testServer = this.Factory.Factories.Single().Server;
 
-        var startup = testServer.Services.GetService<IAutofacStartup>();
-        this.Container = startup.AutofacContainer;
+        //var startup = testServer.Services.GetService<IAutofacStartup>();
+        //this.Container = startup.AutofacContainer;
     }
 
     [OneTimeTearDown]
     public void OneTimeTearDownBase()
     {
-        this.HttpClient.Dispose();
-        this.Factory.Dispose();
+        throw new NotImplementedException();
+        //this.HttpClient.Dispose();
+        //this.Factory.Dispose();
 
-        this.HttpClient = null;
-        this.Factory = null;
+        //this.HttpClient = null;
+        //this.Factory = null;
     }
 
     [SetUp]

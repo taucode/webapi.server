@@ -17,7 +17,7 @@ internal static class WebApiHostHelper
         return errorDto;
     }
 
-    internal static ValidationErrorDto CreateValidationErrorDto(string message, IEnumerable<ValidationFailure> failures)
+    internal static ValidationErrorDto CreateValidationErrorDto(string? message, IEnumerable<ValidationFailure> failures)
     {
         if (failures == null)
         {

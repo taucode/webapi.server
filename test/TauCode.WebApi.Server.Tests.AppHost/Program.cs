@@ -1,5 +1,3 @@
-using Autofac.Extensions.DependencyInjection;
-
 namespace TauCode.WebApi.Server.Tests.AppHost;
 
 public class Program
@@ -9,11 +7,14 @@ public class Program
         CreateHostBuilder(args).Build().Run();
     }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .UseServiceProviderFactory(new AutofacServiceProviderFactory())
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        throw new NotImplementedException();
+        //return Host.CreateDefaultBuilder(args)
+        //    .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+        //    .ConfigureWebHostDefaults(webBuilder =>
+        //    {
+        //        webBuilder.UseStartup<Startup>();
+        //    });
+    }
 }

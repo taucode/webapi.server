@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Text;
 
-// todo clean
 namespace TauCode.WebApi.Server.Tests;
 
 internal static class TestExtensions
@@ -49,21 +48,6 @@ internal static class TestExtensions
 
         return sb.ToString();
     }
-
-    //internal static IdDto ToIdDto(this string s)
-    //{
-    //    if (s == null)
-    //    {
-    //        return null;
-    //    }
-
-    //    return new IdDto(s);
-    //}
-
-    //internal static IdDto ToIdDto(this IdBase id)
-    //{
-    //    return new IdDto(id.Id);
-    //}
 
     internal static ValidationResult ShouldBeValid(this ValidationResult validationResult)
     {
