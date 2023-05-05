@@ -10,7 +10,6 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
-    <PackageReference Include="TauCode.Cqrs" Version="1.8.1-alpha.1.2023-04-06.11-19" />
   </ItemGroup>
 
   <ItemGroup>
