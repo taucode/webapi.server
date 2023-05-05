@@ -7,12 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.5.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Inflector.NetStandard" Version="1.2.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="TauCode.Cqrs.Abstractions" Version="1.8.1-alpha.1.2023-02-10.10-32" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="TauCode.Cqrs" Version="1.9.1-alpha.1.2023-05-03.14-18" />
     <PackageReference Include="TauCode.Validation" Version="1.8.1-alpha.1.2023-04-07.09-19" />
-    <PackageReference Include="TauCode.WebApi" Version="1.8.1-alpha.1.2023-04-07.09-19" />
+    <PackageReference Include="TauCode.WebApi" Version="1.9.1-alpha.1.2023-05-05.00-03" />
   </ItemGroup>
 
 </Project>

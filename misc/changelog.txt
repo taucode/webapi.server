@@ -1,4 +1,8 @@
-﻿2019-07-01
+﻿2023-05-05
+==========
+    1. Taken advantage of new CQRS.
+
+2019-07-01
 ==========
     1. Ported to .NET Standard.
 
