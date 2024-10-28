@@ -1,12 +1,16 @@
-﻿2019-07-01
+﻿2023-05-05
 ==========
-+   1. Get rid of all to-do-s in C# code.
-
-2020-03-20
-==========
-+   1. Find code 'validator is IParameterValidator'; ut it.
+    1. Fix order of todos and changelog
 
 2021-04-04
 ==========
 +   1. Get rid of TauCode.Domain dependency.
 X   2. Consider referencing TauCode.Cqrs.Validation, in which there _should_be_ a method 'IsValidatorType(type)'.
+
+2020-03-20
+==========
++   1. Find code 'validator is IParameterValidator'; ut it.
+
+2019-07-01
+==========
++   1. Get rid of all to-do-s in C# code.

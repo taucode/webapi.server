@@ -1,18 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="6.5.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Inflector.NetStandard" Version="1.2.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="TauCode.Cqrs.Abstractions" Version="1.7.0" />
-    <PackageReference Include="TauCode.Validation" Version="1.7.0" />
-    <PackageReference Include="TauCode.WebApi" Version="1.7.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="TauCode.Cqrs" Version="2.0.1" />
+    <PackageReference Include="TauCode.Validation" Version="2.0.1" />
+    <PackageReference Include="TauCode.WebApi" Version="2.0.1" />
   </ItemGroup>
 
 </Project>

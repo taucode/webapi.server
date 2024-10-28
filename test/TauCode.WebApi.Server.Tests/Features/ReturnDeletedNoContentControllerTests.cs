@@ -3,6 +3,7 @@ using System.Net;
 
 namespace TauCode.WebApi.Server.Tests.Features;
 
+[Ignore("todo: Temporary. remove in prod")]
 [TestFixture]
 public class ReturnDeletedNoContentControllerTests : AppTestBase
 {

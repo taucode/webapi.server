@@ -4,98 +4,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using TauCode.Cqrs;
+using TauCode.Cqrs.Commands;
 using TauCode.Validation;
 
 namespace TauCode.WebApi.Server;
 
 public class ValidationFilterAttribute : ActionFilterAttribute
 {
-    #region Nested
-
-    private class ValidatorRecord
+    public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        internal ValidatorRecord(Type validatorType)
-        {
-            this.ValidatorType = validatorType;
-            var validatedType = GetValidatedType(validatorType);
-            this.ValidateMethod = validatorType.GetMethod(
-                nameof(AbstractValidator<ICommand>.Validate),
-                new Type[] { validatedType });
-        }
-
-        internal Type ValidatorType { get; }
-        internal MethodInfo ValidateMethod { get; }
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Key is validated type, e.g. FooCommand.
-    /// </summary>
-    private readonly Dictionary<Type, ValidatorRecord> _validatorTypes;
-
-    public ValidationFilterAttribute(Assembly coreAssembly)
-    {
-        if (coreAssembly == null)
-        {
-            throw new ArgumentNullException(nameof(coreAssembly));
-        }
-
-        _validatorTypes = coreAssembly
-            .GetTypes()
-            .Where(IsCommandValidator)
-            .ToDictionary(GetValidatedType, x => new ValidatorRecord(x));
-    }
-
-    private static Type GetValidatedType(Type validatorType)
-    {
-        return validatorType.BaseType?.GetGenericArguments().Single();
-    }
-
-    private static bool IsCommandValidator(Type type)
-    {
-        var interfaces = type.GetInterfaces();
-
-        // search for IValidator<TCommand> where TCommand: ICommand
-        foreach (var @interface in interfaces)
-        {
-            var isGeneric = @interface.IsConstructedGenericType;
-            if (!isGeneric)
-            {
-                continue;
-            }
-
-            var getGenericTypeDefinition = @interface.GetGenericTypeDefinition();
-            if (getGenericTypeDefinition != typeof(IValidator<>))
-            {
-                continue;
-            }
-
-            var supposedCommandType = @interface.GetGenericArguments().Single();
-            var argInterfaces = supposedCommandType.GetInterfaces();
-            if (argInterfaces.Contains(typeof(ICommand)))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public override void OnActionExecuting(ActionExecutingContext actionContext)
-    {
-        ValidationErrorDto validationError = null;
+        ValidationErrorDto? validationError = null;
+        var commandValidatorSource = this.GetCommandValidatorSource(context);
 
         // Verify that the model state is valid before running the argument value specific validators.
-        if (!actionContext.ModelState.IsValid)
+        if (!context.ModelState.IsValid)
         {
             // Prepare the validation error response
             validationError = ValidationErrorDto.CreateStandard();
 
-            foreach (var fieldState in actionContext.ModelState)
+            foreach (var fieldState in context.ModelState)
             {
                 // Make sure that all the property names are camel cased and remove all model prefixes
                 var fieldName = WebApiHostHelper.EnsurePropertyNameIsCamelCase(
@@ -121,32 +49,42 @@ public class ValidationFilterAttribute : ActionFilterAttribute
         }
 
         // Validate all the arguments for the current action
-        foreach (var argument in actionContext.ActionDescriptor.Parameters)
+        foreach (var argument in context.ActionDescriptor.Parameters)
         {
             // Skip all arguments without a registered validator
-            var validatorRecord = _validatorTypes.GetValueOrDefault(argument.ParameterType);
-            if (validatorRecord == null)
-            {
-                continue;
-            }
+
+            // todo clean
+            //var validatorRecord = _validatorTypes.GetValueOrDefault(argument.ParameterType);
+            //if (validatorRecord == null)
+            //{
+            //    continue;
+            //}
 
             // Get the registered validator
-            var validator = actionContext.HttpContext.RequestServices.GetService(validatorRecord.ValidatorType);
+            //var validator = context.HttpContext.RequestServices.GetService(validatorRecord.ValidatorType);
+
+            //if (validator == null)
+            //{
+            //    continue; // could not resolve validator
+            //}
+
+            var validator = commandValidatorSource.CreateCommandValidator(
+                context.HttpContext.RequestServices, argument.ParameterType);
 
             if (validator == null)
             {
-                continue; // could not resolve validator
+                continue;
             }
 
             // Inject the action arguments into the validator, so that they can be used in the validation
             // This is a "hack" to, amongst other, support unique validation on the update commands where the resource id is needed to exclude itself from the unique check.
             if (validator is IParameterValidator parameterValidator)
             {
-                parameterValidator.Parameters = actionContext.ActionArguments;
+                parameterValidator.Parameters = context.ActionArguments;
             }
 
             // Validate the argument
-            var argumentValue = actionContext.ActionArguments[argument.Name];
+            var argumentValue = context.ActionArguments[argument.Name];
 
             if (argumentValue == null)
             {
@@ -154,8 +92,11 @@ public class ValidationFilterAttribute : ActionFilterAttribute
                 break;
             }
 
-            var method = validatorRecord.ValidateMethod;
-            var validationResult = (ValidationResult)method.Invoke(validator, new[] { argumentValue });
+            // todo clean
+            //var method = validatorRecord.ValidateMethod;
+            //var validationResult = (ValidationResult)method.Invoke(validator, new[] { argumentValue });
+
+            var validationResult = await this.ValidateAsync(validator, argumentValue);
 
             // Return if the argument value was valid
             if (validationResult.IsValid)
@@ -185,7 +126,7 @@ public class ValidationFilterAttribute : ActionFilterAttribute
 
         if (validationError != null)
         {
-            actionContext.Result = new ContentResult
+            context.Result = new ContentResult
             {
                 StatusCode = StatusCodes.Status400BadRequest,
                 ContentType = "application/json",
@@ -193,9 +134,49 @@ public class ValidationFilterAttribute : ActionFilterAttribute
             };
 
             // Set the action response to a 400 Bad Request, with the validation error response as content
-            actionContext.HttpContext.Response.Headers.Add(DtoHelper.PayloadTypeHeaderName, DtoHelper.ValidationErrorPayloadType);
+            context.HttpContext.Response.Headers.Add(DtoHelper.PayloadTypeHeaderName, DtoHelper.ValidationErrorPayloadType);
+        }
+        else
+        {
+            this.OnActionExecuted(await next());
         }
     }
 
-    public Type[] GetCommandTypes() => _validatorTypes.Keys.ToArray();
+    private Task<ValidationResult> ValidateAsync(object validator, object argumentValue)
+    {
+        // todo: keep method in record
+        var method = validator.GetType()
+            .GetMethod(
+                nameof(AbstractValidator<ICommand>.ValidateAsync),
+                new Type[] { argumentValue.GetType(), typeof(CancellationToken) });
+
+        if (method == null)
+        {
+            throw new NotImplementedException();
+        }
+
+        var task = (Task<ValidationResult>)method.Invoke(
+            validator,
+            new object[]
+            {
+                argumentValue,
+                default(CancellationToken)
+            })!;
+
+        return task!;
+    }
+
+    protected virtual ICommandValidatorSource GetCommandValidatorSource(ActionExecutingContext context)
+    {
+        var commandValidatorSource =
+            (ICommandValidatorSource?)context.HttpContext.RequestServices.GetService(
+                typeof(ICommandValidatorSource));
+
+        if (commandValidatorSource == null)
+        {
+            throw new NotImplementedException();
+        }
+
+        return commandValidatorSource;
+    }
 }
